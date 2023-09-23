@@ -5,13 +5,11 @@ apply plugin: 'com.android.library'
 
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -28,6 +26,7 @@ android {
             path file('src/main/cpp/CMakeLists.txt')
         }
     }
+    namespace 'com.nmmedit.vm'
 }
 buildscript {
     repositories {
@@ -43,9 +42,11 @@ buildscript {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "androidx.annotation:annotation:1.2.0"
+    implementation "androidx.annotation:annotation:1.3.0"
+
+    implementation project(":jna-android")
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
 }

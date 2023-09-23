@@ -290,5 +290,37 @@ public class VmUnitTest {
         assert b == b2;
 
     }
+
+
+    @Test
+    public void testPrivateMethod() {
+        final TestJniRegisterNatives inflater = new TestJniRegisterNatives();
+        final Object realOwner = inflater.getRealOwner();
+    }
+
+    @Test
+    public void testPassStringJna() {
+        VmTest.callJna0();
+    }
+
+    @Test
+    public void testJniCallJnaPassStr() {
+        VmTest.callJnaPassStr();
+    }
+
+
+    @Test
+    public void testAgetOutOfBounds() {
+        try {
+            VmTest.agetOutOfBounds();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            try {
+                VmTest.agetOutOfBounds0();
+                throw new RuntimeException("aget error");
+            }catch (ArrayIndexOutOfBoundsException e2){
+                //正确执行
+            }
+        }
+    }
 }
 

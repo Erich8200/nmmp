@@ -6,6 +6,8 @@ import android.util.LongSparseArray;
 
 import androidx.annotation.Keep;
 
+import com.nmmedit.jna.TestJna;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -269,6 +271,30 @@ public class VmTest extends ArrayList {
     }
 
     public native static boolean constString1();
+
+    //测试native化后,在安卓6下传递对象到jna方法错误问题
+    public static void callJna() {
+        String s = "hello world";
+        TestJna.INSTANCE.pass_str(s);
+    }
+
+    //callJna native化后
+    public native static void callJna0();
+
+    // 手写jni代码去调用pass_str,
+    // 经过测试在android6上面依然还会崩溃, 所以vm部分应该没问题, 问题出在
+    // android6的art或者jna
+    public native static void callJnaPassStr();
+
+
+    //java运行抛数组越界异常
+    public static void agetOutOfBounds() {
+        final int[] ints = new int[2];
+
+        final int i = ints[3];
+    }
+
+    public native static void agetOutOfBounds0();
 }
 
 

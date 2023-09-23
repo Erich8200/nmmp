@@ -1,10 +1,10 @@
 package com.nmmedit.dex2c;
 
 import com.nmmedit.apkprotect.dex2c.Dex2c;
+import com.nmmedit.apkprotect.dex2c.converter.ClassAnalyzer;
 import com.nmmedit.apkprotect.dex2c.converter.MyMethodUtil;
 import com.nmmedit.apkprotect.dex2c.converter.instructionrewriter.InstructionRewriter;
 import com.nmmedit.apkprotect.dex2c.converter.instructionrewriter.NoneInstructionRewriter;
-import com.nmmedit.apkprotect.dex2c.converter.structs.ClassMethodToNative;
 import com.nmmedit.apkprotect.dex2c.converter.testbuild.ClassMethodImplCollection;
 import com.nmmedit.apkprotect.dex2c.filters.ClassAndMethodFilter;
 import org.jf.dexlib2.AccessFlags;
@@ -12,10 +12,10 @@ import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.Method;
-import org.jf.dexlib2.writer.io.FileDataStore;
 import org.jf.dexlib2.writer.pool.DexPool;
 import org.junit.Test;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,13 +29,17 @@ public class Dex2cTest {
 
     @Test
     public void testDexSplit() throws IOException {
-        InputStream resourceAsStream = this.getClass().getResourceAsStream("/classes2.dex");
-        File outdir = new File("/tmp","outdir");
+        File outdir = new File("/tmp", "outdir");
         if (!outdir.exists()) outdir.mkdirs();
         final InstructionRewriter instructionRewriter = new NoneInstructionRewriter();
-        Dex2c.handleDex(resourceAsStream,
+        final ClassAnalyzer classAnalyzer = new ClassAnalyzer();
+        final DexBackedDexFile dexFile = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), new BufferedInputStream(this.getClass().getResourceAsStream("/classes2.dex")));
+        classAnalyzer.loadDexFile(dexFile);
+
+        Dex2c.handleDex(this.getClass().getResourceAsStream("/classes2.dex"),
                 "classes.dex",
                 testFilter,
+                classAnalyzer,
                 instructionRewriter,
                 outdir);
     }
@@ -70,8 +74,11 @@ public class Dex2cTest {
             }
         }
 
-        dexPool.writeTo(new FileDataStore(new File("/home/mao/nmmp/classes2.dex")));
-        dexPoolMethodIml.writeTo(new FileDataStore(new File("/home/mao/nmmp/sym.dat")));
+        //需要看输出文件可以自己制定目录
+//        File outdir = File.createTempFile("mytest", "dex2c-dir");
+//        if(!outdir.exists()) outdir.mkdirs();
+//        dexPool.writeTo(new FileDataStore(new File(outdir,"classes2.dex")));
+//        dexPoolMethodIml.writeTo(new FileDataStore(new File(outdir,"sym.dat")));
 
     }
 
